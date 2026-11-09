@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#142339">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Grille d'alignement">
+<title>Grille d'alignement managérial</title>
+<style>
+  :root{
+    --navy:#142339;--navy2:#1d3557;--gold:#C9A24B;--ink:#1f2430;--soft:#6b7280;
+    --line:#e4e2da;--bg:#f4f2ec;--paper:#fff;
+    --green:#e7f2e5;--greenL:#2f7d3a;--amber:#fbf1dc;--amberL:#a9761a;--red:#f7e3e1;--redL:#b23b2e;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    line-height:1.5;padding:22px 13px 70px}
+  .wrap{max-width:1040px;margin:0 auto}
+  header.top{background:var(--navy);color:#fff;border-radius:14px;padding:26px 26px 22px;
+    box-shadow:0 10px 30px rgba(20,35,57,.18)}
+  header.top .kick{color:var(--gold);font-size:.72rem;letter-spacing:.2em;font-weight:600;text-transform:uppercase}
+  header.top h1{margin:.35em 0 .15em;font-size:1.7rem;line-height:1.15}
+  header.top .sub{color:#cdd3dc;font-size:.95rem;max-width:66ch}
+  .rule{height:2px;background:var(--gold);width:64px;margin:16px 0 0;border-radius:2px}
+  .howto{background:var(--paper);border:1px solid var(--line);border-left:4px solid var(--gold);
+    border-radius:10px;padding:14px 18px;margin:18px 0}
+  .howto b{color:var(--navy)}.howto ol{margin:.5em 0 0;padding-left:1.2em}.howto li{margin:.25em 0}
+  .toolbar{display:flex;gap:9px;flex-wrap:wrap;align-items:center;margin:16px 0}
+  button{font:inherit;cursor:pointer;border-radius:8px;border:1px solid var(--navy);
+    background:var(--navy);color:#fff;padding:9px 14px;font-weight:600}
+  button.ghost{background:#fff;color:var(--navy)}
+  button.warn{background:#fff;color:var(--redL);border-color:var(--redL)}
+  button.mini{padding:2px 8px;font-size:.8rem;border-radius:6px}
+  button:hover{opacity:.9}
+  #saved{color:var(--soft);font-size:.82rem}
+  .editnote{display:none;background:#fff7e6;border:1px solid var(--amber);color:#7a5a12;
+    border-radius:10px;padding:10px 14px;margin:10px 0;font-size:.9rem}
+  body.editing .editnote{display:block}
+  .scroll{overflow-x:auto;border-radius:12px;box-shadow:0 6px 20px rgba(0,0,0,.06)}
+  table{border-collapse:collapse;width:100%;min-width:720px;background:var(--paper)}
+  th,td{border:1px solid var(--line);padding:7px 9px;text-align:center;vertical-align:middle}
+  thead th{background:var(--navy);color:#fff;font-size:.8rem;font-weight:600}
+  thead th.qcol{text-align:left;min-width:270px}
+  .lever td{background:var(--navy2);color:#fff;text-align:left;font-weight:600;font-size:.95rem}
+  .lever .num{color:var(--gold);font-weight:700;margin-right:.4em}
+  td.q{text-align:left;font-size:.9rem;min-width:270px}
+  input.ans{width:44px;height:32px;text-align:center;border:1px solid #cfd4da;border-radius:6px;font:inherit}
+  input.ans:focus{outline:2px solid var(--gold);border-color:var(--gold)}
+  input.pname{width:74px;background:transparent;border:none;border-bottom:1px dashed rgba(255,255,255,.55);
+    color:#fff;text-align:center;font:inherit;font-size:.8rem;padding:2px 0}
+  input.pname::placeholder{color:#aeb8c6}
+  td.moy{font-weight:700;background:#faf8f2}
+  td.ecart{font-weight:700}
+  .a-ok{background:var(--green);color:var(--greenL)}.a-warn{background:var(--amber);color:var(--amberL)}
+  .a-bad{background:var(--red);color:var(--redL)}
+  .lever-avg{font-weight:700;color:var(--gold)}
+  tfoot td{background:#eef0f3;font-weight:700}
+  /* édition */
+  input.levname{width:100%;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.4);
+    color:#fff;font:inherit;font-weight:600;border-radius:6px;padding:4px 8px}
+  textarea.qedit{width:100%;min-height:46px;font:inherit;font-size:.88rem;border:1px solid #cfd4da;
+    border-radius:6px;padding:5px 7px;resize:vertical}
+  .qrow-tools{white-space:nowrap}
+  .legend{display:flex;gap:16px;flex-wrap:wrap;margin:14px 0 0;font-size:.82rem;color:var(--soft)}
+  .chip{display:inline-block;width:14px;height:14px;border-radius:3px;vertical-align:-2px;margin-right:5px}
+  .summary{display:flex;gap:14px;flex-wrap:wrap;margin:22px 0 0}
+  .card{flex:1 1 210px;background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:16px 18px}
+  .card .lbl{font-size:.72rem;letter-spacing:.07em;text-transform:uppercase;color:var(--soft)}
+  .card .val{font-size:2rem;font-weight:800;color:var(--navy);margin:.05em 0}
+  .card .val small{font-size:.9rem;color:var(--soft);font-weight:600}
+  .verdict{margin-top:4px;font-weight:600;color:var(--soft)}
+  h2.sec{font-size:1.25rem;color:var(--navy);margin:34px 0 4px}
+  .seclead{color:var(--soft);font-size:.92rem;margin:0 0 14px}
+  .radars{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:14px}
+  .rcard{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:12px 12px 6px;text-align:center}
+  .rcard h4{margin:0 0 4px;font-size:.95rem;color:var(--navy)}
+  .rcard .meta{font-size:.75rem;color:var(--soft);margin-bottom:4px}
+  .common{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:16px;
+    display:flex;gap:20px;flex-wrap:wrap;align-items:center;justify-content:center}
+  .rlegend{font-size:.82rem;color:var(--ink);max-width:360px}
+  .rlegend div{margin:.15em 0}.rlegend .k{display:inline-block;width:22px;height:0;border-top-width:3px;
+    border-top-style:solid;vertical-align:middle;margin-right:7px}
+  .empty{color:var(--soft);font-style:italic;padding:10px 2px}
+  .book{margin-top:30px;background:var(--navy);color:#fff;border-radius:14px;padding:22px 24px;
+    display:flex;gap:20px;flex-wrap:wrap;align-items:center;justify-content:space-between}
+  .book .t{max-width:60ch}.book .kick{color:var(--gold);font-size:.72rem;letter-spacing:.18em;text-transform:uppercase;font-weight:600}
+  .book h3{margin:.35em 0 .25em;font-size:1.2rem}.book p{margin:0;color:#cdd3dc;font-size:.92rem}
+  .book a.btn{display:inline-block;background:var(--gold);color:#20170a;text-decoration:none;
+    font-weight:700;padding:11px 18px;border-radius:9px;white-space:nowrap}
+  .book input.url{margin-top:8px;width:100%;max-width:420px;font:inherit;font-size:.82rem;
+    padding:6px 8px;border-radius:6px;border:1px solid rgba(255,255,255,.4);background:rgba(255,255,255,.1);color:#fff}
+  .urlwrap{display:none}body.editing .urlwrap{display:block}
+  footer.credit{margin-top:22px;font-size:.8rem;color:var(--soft);text-align:center}
+  footer.credit b{color:var(--navy)}
+  .editonly{display:none}body.editing .editonly{display:inline-block}
+  .startbar{display:flex;gap:12px;flex-wrap:wrap;margin:20px 0 6px}
+  button.hero{font-size:1.05rem;padding:14px 30px;background:var(--gold);color:#20170a;border-color:var(--gold);font-weight:800}
+  .teaser{color:var(--soft);font-size:.9rem;margin:.5em 0 0}
+  .appbar{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:2px 0 12px}
+  .appbar .apptitle{font-weight:700;color:var(--navy)}
+  #cfgrow{margin:8px 0}#cfgrow label{font-size:.85rem;color:var(--soft);margin-right:6px}
+  input.url2{font:inherit;font-size:.85rem;padding:6px 9px;border-radius:7px;border:1px solid var(--line);min-width:min(340px,80vw)}
+  @media print{
+    #accueil{display:none!important}#app{display:block!important}
+    body{background:#fff;padding:0;font-size:11px}
+    .toolbar,.howto,.editnote,.book input,.urlwrap{display:none!important}
+    header.top{box-shadow:none;border:1px solid var(--line)}
+    .scroll{box-shadow:none;overflow:visible}table{min-width:0}
+    thead th,.lever td,.a-ok,.a-warn,.a-bad,.book{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+    .radars,.summary,.common{page-break-inside:avoid}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div id="accueil">
+  <header class="top">
+    <div class="kick">Outil d'alignement d'équipe</div>
+    <h1 id="h1title">Grille d'alignement managérial</h1>
+    <div class="sub">Vingt et une questions pour mesurer, levier par levier, à quel point une équipe de direction ou un groupe de managers partage la même lecture de la performance. Utilisable par un comité de direction, une direction régionale, un service ou toute équipe d'encadrement. Ce qui compte le plus n'est pas la note, mais l'écart entre vos réponses : il révèle où se cache le désalignement.</div>
+    <div class="rule"></div>
+  </header>
+
+  <div class="howto">
+    <b>Mode d'emploi.</b>
+    <ol>
+      <li>Chaque colonne représente un participant. Cliquez sur les intitulés en haut du tableau (P1, P2…) et remplacez-les par le nom ou les initiales de chaque membre de l'équipe.</li>
+      <li>Chacun note chaque question de <b>1</b> (pas du tout d'accord) à <b>5</b> (tout à fait d'accord), en toute franchise.</li>
+      <li>La colonne <b>Moyenne</b> donne le niveau perçu ; la colonne <b>Écart</b> mesure la distance entre la note la plus haute et la plus basse : c'est l'indicateur d'alignement.</li>
+      <li>Un écart élevé, même avec une bonne moyenne, signale un <b>désalignement</b> à discuter en priorité. Les radars, en bas, visualisent ces écarts.</li>
+      <li>Bouton <b>Personnaliser les questions</b> : adaptez, complétez ou reformulez les questions selon votre secteur, puis diffusez votre version.</li>
+    </ol>
+  </div>
+
+  <div class="startbar">
+    <button class="hero" data-act="start">Commencer</button>
+    <button class="ghost" data-act="group">Version grand groupe (au-delà de 6)</button>
+  </div>
+  <p class="teaser">Cette grille est un outil d'application de l'ouvrage <b>Booster votre entreprise par les 7 principes du management de la qualité</b>. Pour une équipe de deux à six personnes, utilisez cette grille ; au-delà, le bouton « Version grand groupe » renvoie vers un formulaire.</p>
+  </div><!--/accueil-->
+
+  <div id="app" style="display:none">
+  <div class="appbar">
+    <span class="apptitle">Grille d'alignement managérial</span>
+    <button class="ghost mini" data-act="home">← Accueil</button>
+  </div>
+
+  <div class="editonly" id="cfgrow">
+    <label>Lien du formulaire grand groupe (Google Forms) :</label>
+    <input id="groupurl" class="url2" placeholder="https://forms.gle/…">
+  </div>
+
+  <div class="toolbar">
+    <button data-act="print">Imprimer / Enregistrer en PDF</button>
+    <button class="ghost" data-act="toggleEdit" id="editBtn">Personnaliser les questions</button>
+    <button class="ghost editonly" data-act="addP">+ Participant</button>
+    <button class="ghost" data-act="download">Télécharger ma version (.html)</button>
+    <button class="warn" data-act="reset">Réinitialiser</button>
+    <span id="saved"></span>
+  </div>
+
+  <div class="editnote">
+    <b>Mode personnalisation activé.</b> Modifiez le nom des leviers, reformulez les questions,
+    ajoutez-en avec « + Question », supprimez-en avec ✕, ou ajoutez des participants.
+    Renseignez aussi le lien vers votre livre en bas de page. Cliquez ensuite sur
+    « Télécharger ma version (.html) » pour obtenir un fichier autonome avec vos questions, prêt à partager ou à publier.
+  </div>
+
+  <div class="scroll">
+    <table id="grille">
+      <thead id="head"></thead>
+      <tbody id="body"></tbody>
+      <tfoot>
+        <tr>
+          <td style="text-align:right" id="footlbl">Score global d'alignement</td>
+          <td id="footpad"></td>
+          <td class="moy" id="gMoy">–</td>
+          <td class="ecart" id="gEcart">–</td>
+        </tr>
+      </tfoot>
+    </table>
+  </div>
+
+  <div class="legend">
+    <span><span class="chip" style="background:var(--green)"></span>Écart 0–1 : aligné</span>
+    <span><span class="chip" style="background:var(--amber)"></span>Écart 2 : vigilance</span>
+    <span><span class="chip" style="background:var(--red)"></span>Écart 3–4 : désaligné</span>
+  </div>
+
+  <div class="summary">
+    <div class="card"><div class="lbl">Niveau moyen perçu</div><div class="val" id="cMoy">–<small>/5</small></div><div class="verdict" id="vMoy">En attente de réponses</div></div>
+    <div class="card"><div class="lbl">Désalignement moyen</div><div class="val" id="cEcart">–</div><div class="verdict" id="vEcart">Écart moyen entre participants</div></div>
+    <div class="card"><div class="lbl">Levier le plus désaligné</div><div class="val" id="cWorst" style="font-size:1.1rem;line-height:1.25">–</div><div class="verdict">À traiter en priorité</div></div>
+  </div>
+
+  <h2 class="sec">Radar commun</h2>
+  <p class="seclead">Chaque participant apparaît en trait fin, la moyenne du groupe en trait doré épais. Plus les profils se superposent, plus l'équipe est alignée.</p>
+  <div class="common" id="commonRadar"></div>
+
+  <h2 class="sec">Radars individuels</h2>
+  <p class="seclead">Un profil par participant, sur les sept leviers. Ils se génèrent dès qu'un participant a saisi des notes.</p>
+  <div class="radars" id="indivRadars"></div>
+
+  <div class="book">
+    <div class="t">
+      <div class="kick">Pour aller plus loin</div>
+      <h3>Le détail des sept leviers est développé dans l'ouvrage</h3>
+      <p>Cette grille est un outil d'application. La méthode complète, les principes expliqués un à un et les cas concrets figurent dans <b>Booster votre entreprise par les 7 principes du management de la qualité</b>, d'Yves GNANSOUNOU (2ᵉ édition, 2026).</p>
+      <div class="urlwrap"><input class="url" id="bookurl" placeholder="Collez ici le lien vers votre livre (Amazon, site…)"></div>
+    </div>
+    <a class="btn" id="bookbtn" href="#" target="_blank" rel="noopener">Découvrir l'ouvrage</a>
+  </div>
+
+  <footer class="credit">© 2026 Yves GNANSOUNOU · Grille dérivée de l'ouvrage <b>Booster votre entreprise</b> · Tous droits réservés.</footer>
+  </div><!--/app-->
+</div>
+
+<script>
+const DEFAULT={
+  title:"Grille d'alignement managérial", bookUrl:"", groupUrl:"",
+  participants:["P1","P2","P3","P4"],
+  leviers:[
+    {name:"Création de valeur perçue",questions:[
+      "Avons-nous tous la même définition du client que nous servons ?",
+      "Mesurons-nous la perception du client, ou seulement nos indicateurs internes ?",
+      "Chaque direction se sent-elle responsable de l'expérience client ?"]},
+    {name:"Leadership d'alignement",questions:[
+      "Notre cap est-il assez clair pour que chacun décide seul dans le bon sens ?",
+      "Nos objectifs chiffrés se renforcent-ils, ou se détruisent-ils entre directions ?",
+      "Parlons-nous d'une seule voix devant nos équipes et nos clients ?"]},
+    {name:"Énergie collective et engagement",questions:[
+      "L'engagement est-il une responsabilité de direction, ou l'affaire du seul DRH ?",
+      "Connaissons-nous l'état réel de l'engagement, ou le supposons-nous ?",
+      "Nos décisions tiennent-elles compte de leur effet sur l'engagement ?"]},
+    {name:"Fluidité opérationnelle",questions:[
+      "Raisonnons-nous en cases d'organigramme, ou en flux de valeur ?",
+      "Nos processus transverses ont-ils un responsable clair ?",
+      "Quand nous optimisons un service, vérifions-nous l'effet sur l'ensemble ?"]},
+    {name:"Discipline du progrès",questions:[
+      "Avons-nous une méthode d'amélioration partagée par tous ?",
+      "Nos démarches vont-elles jusqu'à la capitalisation, ou s'arrêtent-elles au constat ?",
+      "Osons-nous remettre en cause ce qui marche encore ?"]},
+    {name:"Intelligence décisionnelle",questions:[
+      "Nos décisions s'appuient-elles sur des données partagées ?",
+      "Exploitons-nous l'intelligence déjà présente dans nos murs ?",
+      "Quand les données contredisent l'intuition, acceptons-nous de revoir notre position ?"]},
+    {name:"Performance de l'écosystème",questions:[
+      "Traitons-nous nos partenaires en adversaires, ou en maillons de notre performance ?",
+      "Avons-nous identifié nos dépendances critiques et le risque qu'elles font peser ?",
+      "La conduite de nos fournisseurs est-elle à la hauteur des valeurs dont nous nous réclamons ?"]}
+  ]
+};
+const KEY="grille_alignement_manageriale_v2";
+const PALETTE=["#1f4e79","#2f7d3a","#a9761a","#8e44ad","#b23b2e","#0f7b8a","#5d6d7e","#c0392b"];
+let state, editing=false;
+
+function freshAnswers(lev,np){return lev.map(L=>L.questions.map(()=>Array(np).fill("")));}
+function fromStructure(s){
+  return {title:s.title||DEFAULT.title, bookUrl:s.bookUrl||"", groupUrl:s.groupUrl||"",
+    participants:(s.participants||DEFAULT.participants).slice(),
+    leviers:(s.leviers||DEFAULT.leviers).map(L=>({name:L.name,questions:L.questions.slice()})),
+    answers:freshAnswers(s.leviers||DEFAULT.leviers,(s.participants||DEFAULT.participants).length)};
+}
+function normalize(st){
+  const np=st.participants.length;
+  st.leviers.forEach((L,li)=>{
+    st.answers[li]=st.answers[li]||[];
+    L.questions.forEach((q,qi)=>{
+      st.answers[li][qi]=st.answers[li][qi]||Array(np).fill("");
+      while(st.answers[li][qi].length<np)st.answers[li][qi].push("");
+      st.answers[li][qi].length=np;
+    });
+    st.answers[li].length=L.questions.length;
+  });
+  st.answers.length=st.leviers.length;
+  return st;
+}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(state));flash();}catch(e){}}
+function flash(){const s=document.getElementById("saved");s.textContent="Enregistré sur cet appareil ✓";clearTimeout(window.__t);window.__t=setTimeout(()=>s.textContent="",1600);}
+function load(){
+  try{const d=JSON.parse(localStorage.getItem(KEY)||"null");if(d&&d.leviers)return normalize(d);}catch(e){}
+  return normalize(fromStructure(window.__PRESET||DEFAULT));
+}
+
+function esc(s){return (s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");}
+function buildHead(){
+  const h=document.getElementById("head");
+  let r='<tr><th class="qcol">Question d\'alignement (note de 1 à 5)</th>';
+  state.participants.forEach((p,c)=>{
+    r+=`<th><input class="pname" data-c="${c}" value="${esc(p)}" placeholder="P${c+1}">`+
+       (editing?`<br><button class="mini warn editonly" data-act="delP" data-c="${c}" title="Supprimer">✕</button>`:``)+`</th>`;
+  });
+  r+='<th>Moyenne</th><th>Écart</th></tr>';
+  h.innerHTML=r;
+  document.getElementById("footpad").colSpan=state.participants.length;
+}
+function buildBody(){
+  const b=document.getElementById("body");let html="";
+  state.leviers.forEach((L,li)=>{
+    const span=state.participants.length+1;
+    if(editing){
+      html+=`<tr class="lever"><td colspan="${span}"><span class="num">Levier ${li+1}</span>`+
+        `<input class="levname" data-l="${li}" value="${esc(L.name)}"></td>`+
+        `<td class="lever-avg" colspan="2"><button class="mini ghost" data-act="addQ" data-l="${li}">+ Question</button></td></tr>`;
+    }else{
+      html+=`<tr class="lever"><td colspan="${span}"><span class="num">Levier ${li+1}</span>${esc(L.name)}</td>`+
+        `<td class="lever-avg" id="lev${li}" colspan="2">–</td></tr>`;
+    }
+    L.questions.forEach((q,qi)=>{
+      html+=`<tr data-l="${li}" data-q="${qi}">`;
+      if(editing){
+        html+=`<td class="q"><textarea class="qedit" data-l="${li}" data-q="${qi}">${esc(q)}</textarea>`+
+          `<div class="qrow-tools"><button class="mini warn" data-act="delQ" data-l="${li}" data-q="${qi}">✕ Supprimer</button></div></td>`;
+      }else{
+        html+=`<td class="q">${esc(q)}</td>`;
+      }
+      state.participants.forEach((p,c)=>{
+        const v=esc(state.answers[li][qi][c]||"");
+        html+=`<td><input class="ans" type="number" min="1" max="5" inputmode="numeric" data-l="${li}" data-q="${qi}" data-c="${c}" value="${v}"></td>`;
+      });
+      html+=`<td class="moy" data-moy>–</td><td class="ecart" data-ecart>–</td></tr>`;
+    });
+  });
+  b.innerHTML=html;
+}
+function rebuild(){document.body.classList.toggle("editing",editing);
+  document.getElementById("editBtn").textContent=editing?"Terminer la personnalisation":"Personnaliser les questions";
+  buildHead();buildBody();recompute();}
+
+function clsE(e){return e<=1?"a-ok":(e===2?"a-warn":"a-bad");}
+function partLeverAvg(){ // [ci][li] moyenne du participant sur le levier (null si rien)
+  return state.participants.map((_,c)=>state.leviers.map((L,li)=>{
+    const vs=L.questions.map((_,qi)=>parseFloat(state.answers[li][qi][c])).filter(v=>v>=1&&v<=5);
+    return vs.length?vs.reduce((a,b)=>a+b,0)/vs.length:null;
+  }));
+}
+function recompute(){
+  let means=[],ecarts=[];const levEc=state.leviers.map(()=>[]);
+  document.querySelectorAll("#body tr[data-l][data-q]").forEach(tr=>{
+    const li=+tr.dataset.l, qi=+tr.dataset.q;
+    const vs=[...tr.querySelectorAll("input.ans")].map(i=>parseFloat(i.value)).filter(v=>v>=1&&v<=5);
+    const mC=tr.querySelector("[data-moy]"),eC=tr.querySelector("[data-ecart]");eC.className="ecart";
+    if(!vs.length){mC.textContent="–";eC.textContent="–";return;}
+    const m=vs.reduce((a,b)=>a+b,0)/vs.length;mC.textContent=m.toFixed(1);means.push(m);
+    if(vs.length>=2){const e=Math.max(...vs)-Math.min(...vs);eC.textContent=e;eC.classList.add(clsE(e));ecarts.push(e);levEc[li].push(e);}
+    else eC.textContent="–";
+  });
+  if(!editing) state.leviers.forEach((L,li)=>{
+    const cell=document.getElementById("lev"+li);if(!cell)return;
+    const arr=[];L.questions.forEach((_,qi)=>{
+      const vs=[...document.querySelectorAll(`#body tr[data-l="${li}"][data-q="${qi}"] input.ans`)].map(i=>parseFloat(i.value)).filter(v=>v>=1&&v<=5);
+      if(vs.length)arr.push(vs.reduce((a,b)=>a+b,0)/vs.length);
+    });
+    cell.textContent=arr.length?(arr.reduce((a,b)=>a+b,0)/arr.length).toFixed(1)+" /5":"–";
+  });
+  const gM=means.length?means.reduce((a,b)=>a+b,0)/means.length:null;
+  const gE=ecarts.length?ecarts.reduce((a,b)=>a+b,0)/ecarts.length:null;
+  document.getElementById("gMoy").textContent=gM!=null?gM.toFixed(1):"–";
+  const ge=document.getElementById("gEcart");ge.className="ecart";
+  if(gE!=null){ge.textContent=gE.toFixed(1);ge.classList.add(clsE(Math.round(gE)));}else ge.textContent="–";
+  document.getElementById("cMoy").innerHTML=(gM!=null?gM.toFixed(1):"–")+'<small>/5</small>';
+  document.getElementById("cEcart").textContent=gE!=null?gE.toFixed(1):"–";
+  const vM=document.getElementById("vMoy"),vE=document.getElementById("vEcart");
+  if(gM!=null){vM.textContent=gM>=4?"Maturité élevée":gM>=3?"En progression":"Fragile";vM.style.color=gM>=4?"var(--greenL)":gM>=3?"var(--amberL)":"var(--redL)";}
+  if(gE!=null){vE.textContent=gE<=1?"Équipe alignée":gE<2.5?"Alignement partiel":"Désalignement marqué";vE.style.color=gE<=1?"var(--greenL)":gE<2.5?"var(--amberL)":"var(--redL)";}
+  let worst=null,best=-1;levEc.forEach((a,li)=>{if(a.length){const m=a.reduce((x,y)=>x+y,0)/a.length;if(m>best){best=m;worst=li;}}});
+  document.getElementById("cWorst").textContent=worst!=null?("Levier "+(worst+1)+" — "+state.leviers[worst].name):"–";
+  renderRadars();
+}
+
+function radarSVG(series,size,showLabels){
+  const cx=size/2,cy=size/2,R=size*0.34,N=state.leviers.length,maxV=5;
+  const ang=i=>-Math.PI/2+i*2*Math.PI/N;
+  const pt=(i,v)=>[cx+R*(v/maxV)*Math.cos(ang(i)),cy+R*(v/maxV)*Math.sin(ang(i))];
+  let s=`<svg viewBox="0 0 ${size} ${size}" width="${size}" height="${size}" role="img">`;
+  for(let r=1;r<=maxV;r++){let p=[];for(let i=0;i<N;i++){const[x,y]=pt(i,r);p.push(x.toFixed(1)+","+y.toFixed(1));}
+    s+=`<polygon points="${p.join(' ')}" fill="none" stroke="#e4e2da" stroke-width="1"/>`;}
+  for(let i=0;i<N;i++){const[x,y]=pt(i,maxV);s+=`<line x1="${cx}" y1="${cy}" x2="${x.toFixed(1)}" y2="${y.toFixed(1)}" stroke="#e4e2da" stroke-width="1"/>`;
+    const[lx,ly]=pt(i,maxV+0.7);s+=`<text x="${lx.toFixed(1)}" y="${ly.toFixed(1)}" font-size="${size*0.052}" fill="#6b7280" text-anchor="middle" dominant-baseline="middle">${i+1}</text>`;}
+  series.forEach(se=>{let p=[];for(let i=0;i<N;i++){const[x,y]=pt(i,se.values[i]||0);p.push(x.toFixed(1)+","+y.toFixed(1));}
+    s+=`<polygon points="${p.join(' ')}" fill="${se.fill||'none'}" stroke="${se.color}" stroke-width="${se.width||2}" stroke-linejoin="round"/>`;});
+  s+=`</svg>`;return s;
+}
+function hasData(vals){return vals.some(v=>v!=null);}
+function renderRadars(){
+  const pla=partLeverAvg();
+  // commun
+  const active=state.participants.map((n,c)=>({n,c})).filter(o=>hasData(pla[o.c]));
+  const common=document.getElementById("commonRadar");
+  if(!active.length){common.innerHTML='<div class="empty">Les radars apparaîtront dès que des notes seront saisies.</div>';}
+  else{
+    const N=state.leviers.length;
+    const avg=state.leviers.map((_,li)=>{const v=active.map(o=>pla[o.c][li]).filter(x=>x!=null);return v.length?v.reduce((a,b)=>a+b,0)/v.length:0;});
+    const series=active.map(o=>({values:pla[o.c].map(x=>x||0),color:PALETTE[o.c%PALETTE.length],width:1.4}));
+    series.push({values:avg,color:"#C9A24B",width:3.5,fill:"rgba(201,162,75,.14)"});
+    let leg='<div class="rlegend"><b>Leviers</b>';
+    state.leviers.forEach((L,i)=>leg+=`<div><b>${i+1}.</b> ${esc(L.name)}</div>`);
+    leg+='<div style="margin-top:8px"><span class="k" style="border-top-color:#C9A24B"></span>Moyenne du groupe</div></div>';
+    common.innerHTML=`<div>${radarSVG(series,320,true)}</div>`+leg;
+  }
+  // individuels
+  const box=document.getElementById("indivRadars");
+  if(!active.length){box.innerHTML='<div class="empty">Aucun participant n\'a encore de notes.</div>';return;}
+  box.innerHTML=active.map(o=>{
+    const vals=pla[o.c].map(x=>x||0);
+    const filled=pla[o.c].filter(x=>x!=null).length;
+    const col=PALETTE[o.c%PALETTE.length];
+    return `<div class="rcard"><h4>${esc(o.n||("P"+(o.c+1)))}</h4>`+
+      `<div class="meta">${filled}/${state.leviers.length} leviers notés</div>`+
+      radarSVG([{values:vals,color:col,width:2,fill:col+"22"}],190,false)+`</div>`;
+  }).join("");
+}
+function updateBook(){
+  const a=document.getElementById("bookbtn");const u=(state.bookUrl||"").trim();
+  if(u){a.href=u;a.style.display="";}else{a.href="#";a.style.display=editing?"":"none";}
+  const inp=document.getElementById("bookurl");if(inp&&inp.value!==(state.bookUrl||""))inp.value=state.bookUrl||"";
+}
+
+document.addEventListener("input",e=>{
+  const t=e.target;
+  if(t.classList.contains("ans")){let v=t.value;if(v!==""){let n=Math.round(+v);if(n<1)n=1;if(n>5)n=5;t.value=isNaN(n)?"":n;}
+    state.answers[+t.dataset.l][+t.dataset.q][+t.dataset.c]=t.value;recompute();save();}
+  else if(t.classList.contains("pname")){state.participants[+t.dataset.c]=t.value;recompute();save();}
+  else if(t.classList.contains("levname")){state.leviers[+t.dataset.l].name=t.value;save();}
+  else if(t.classList.contains("qedit")){state.leviers[+t.dataset.l].questions[+t.dataset.q]=t.value;save();}
+  else if(t.id==="bookurl"){state.bookUrl=t.value;updateBook();save();}
+  else if(t.id==="groupurl"){state.groupUrl=t.value;save();}
+});
+document.addEventListener("click",e=>{
+  const b=e.target.closest("[data-act]");if(!b)return;
+  const act=b.dataset.act;
+  if(act==="print")window.print();
+  else if(act==="start")showApp();
+  else if(act==="home")showAccueil();
+  else if(act==="group"){const u=(state.groupUrl||"").trim(); if(u)window.open(u,"_blank"); else alert("Renseignez d'abord le lien du formulaire : entrez dans « Personnaliser les questions », puis collez l'adresse Google Forms dans le champ prévu.");}
+  else if(act==="toggleEdit"){editing=!editing;rebuild();updateBook();updateGroup();showAccueil();}
+  else if(act==="addP"){if(state.participants.length>=6){alert("Six participants au maximum pour cette grille. Au-delà, utilisez la version grand groupe (Google Forms).");return;} state.participants.push("P"+(state.participants.length+1));
+    state.leviers.forEach((L,li)=>L.questions.forEach((_,qi)=>state.answers[li][qi].push("")));rebuild();save();}
+  else if(act==="delP"){const c=+b.dataset.c;if(state.participants.length<=1)return;
+    state.participants.splice(c,1);state.leviers.forEach((L,li)=>L.questions.forEach((_,qi)=>state.answers[li][qi].splice(c,1)));rebuild();save();}
+  else if(act==="addQ"){const l=+b.dataset.l;state.leviers[l].questions.push("Nouvelle question à formuler…");
+    state.answers[l].push(Array(state.participants.length).fill(""));rebuild();save();}
+  else if(act==="delQ"){const l=+b.dataset.l,q=+b.dataset.q;if(state.leviers[l].questions.length<=1)return;
+    state.leviers[l].questions.splice(q,1);state.answers[l].splice(q,1);rebuild();save();}
+  else if(act==="reset"){if(confirm("Réinitialiser la grille (questions et réponses) et effacer les données de cet appareil ?")){
+    try{localStorage.removeItem(KEY);}catch(_){}state=normalize(fromStructure(window.__PRESET||DEFAULT));editing=false;rebuild();updateBook();}}
+  else if(act==="download")exportHTML();
+});
+function exportHTML(){
+  const preset={title:state.title,bookUrl:state.bookUrl,groupUrl:state.groupUrl,participants:state.participants.slice(),
+    leviers:state.leviers.map(L=>({name:L.name,questions:L.questions.slice()}))};
+  const clone=document.documentElement.cloneNode(true);
+  clone.querySelectorAll("script[data-preset]").forEach(n=>n.remove());
+  clone.querySelectorAll("input.ans").forEach(i=>i.removeAttribute("value"));
+  const s=document.createElement("script");s.setAttribute("data-preset","1");
+  s.textContent="window.__PRESET="+JSON.stringify(preset)+";";
+  clone.querySelector("head").appendChild(s);
+  const html="<!DOCTYPE html>\n"+clone.outerHTML;
+  const blob=new Blob([html],{type:"text/html;charset=utf-8"});
+  const a=document.createElement("a");a.href=URL.createObjectURL(blob);
+  a.download="grille-alignement.html";document.body.appendChild(a);a.click();a.remove();
+}
+
+function showApp(){document.getElementById("accueil").style.display="none";document.getElementById("app").style.display="";window.scrollTo(0,0);}
+function showAccueil(){document.getElementById("app").style.display="none";document.getElementById("accueil").style.display="";window.scrollTo(0,0);}
+function updateGroup(){const i=document.getElementById("groupurl");if(i&&i.value!==(state.groupUrl||""))i.value=state.groupUrl||"";}
+// init
+state=load();
+if(window.__PRESET&&window.__PRESET.title)document.getElementById("h1title").textContent=window.__PRESET.title;
+rebuild();updateBook();
+</script>
+</body>
+</html>
