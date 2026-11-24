@@ -30,6 +30,7 @@
   header .credo{color:var(--gold);font-size:11px;letter-spacing:2px;margin-top:16px;text-transform:uppercase}
   .card{background:#fff;border-radius:12px;padding:22px 20px;margin:18px 0;box-shadow:0 6px 24px rgba(0,0,0,.18)}
   .lev-title{color:var(--navy);font-size:19px;font-weight:800;margin:0 0 2px;border-left:4px solid var(--gold);padding-left:12px}
+  .lev-sub{color:#666;font-style:italic;font-size:14px;margin:4px 0 6px 16px}
   .lev-num{color:var(--gold);font-weight:700;font-size:13px;letter-spacing:1px;text-transform:uppercase}
   .q{padding:14px 0;border-bottom:1px solid #eee}
   .q:last-child{border-bottom:none}
@@ -78,7 +79,11 @@
   <div id="intro" class="card" style="text-align:center">
     <p style="margin:6px 0 14px">Répondez honnêtement aux 30 questions, réparties sur les six leviers.
     À la fin, votre radar de maturité se dessine et un profil vous est proposé.
-    <br><b>Oui</b> vaut 2 points, <b>Partiellement</b> 1 point, <b>Non</b> 0.</p>
+    </p>
+    <p style="margin:0 0 14px;text-align:left">Répondez selon la situation d'aujourd'hui, pas selon ce que vous prévoyez.<br>
+    <b>Oui</b> : c'est en place et cela fonctionne (2 points).<br>
+    <b>Partiellement</b> : cela existe, mais pas partout ou pas toujours (1 point).<br>
+    <b>Non</b> : ce n'est pas encore en place (0 point).</p>
     <button class="btn" onclick="start()">Commencer le diagnostic</button>
   </div>
 
@@ -104,6 +109,9 @@
     </div>
     <div class="book">
       <b>Pour aller plus loin</b>
+      Ce radar montre où se trouvent vos fragilités. Pour savoir ce qu'elles vous coûtent et par où commencer,
+      envoyez votre résultat à yvesgnansounou@gmail.com. Si vos associés ou vos responsables le remplissent aussi,
+      la comparaison de vos radars en dira encore plus.<br><br>
       La méthode complète pour agir sur chacun de ces six leviers, avec les outils, les grilles
       et les cas concrets, se trouve dans l'ouvrage <i>Les six leviers de la performance
       organisationnelle</i>, de Yves Gnansounou. Pour vous procurer la version brochée,
@@ -123,62 +131,68 @@ const CONFIG = {
   leviers:[
     {
       nom: "Le système documentaire",
+      sous: "Ce qui ne dépend plus d'une seule personne",
       questions: [
-        "Disposez-vous de procédures écrites pour vos activités clés ?",
-        "Utilisez-vous des formulaires et des enregistrements pour tracer vos opérations ?",
-        "Vos documents sont-ils référencés, datés et gérés en versions, avec validation et diffusion maîtrisées ?",
-        "Tenez-vous une veille réglementaire et mettez-vous vos documents à jour en conséquence ?",
-        "Votre système documentaire est-il utilisé au quotidien, audité et amélioré, voire numérisé ?"
+        "Les façons de faire de vos activités les plus importantes sont-elles écrites quelque part (cahier, fiche, fichier…) ?",
+        "Gardez-vous une trace écrite de vos opérations courantes (bons de commande, bons de livraison, registres, cahier de caisse…) ?",
+        "Quand une consigne change, tout le monde travaille-t-il avec la nouvelle version, et plus avec l'ancienne ?",
+        "Savez-vous quelles lois, règles et autorisations s'appliquent à votre activité, et vos façons de faire en tiennent-elles compte ?",
+        "Si une personne clé s'absente un mois, quelqu'un d'autre peut-il faire son travail correctement grâce à ce qui est écrit ?"
       ]
     },
     {
       nom: "Agir, mesurer, aligner",
+      sous: "Savoir où l'on gagne et où l'on perd de l'argent",
       questions: [
-        "Avez-vous défini des objectifs clairs pour vos activités ?",
-        "Suivez-vous des indicateurs de performance dans un tableau de bord ?",
-        "Vos objectifs et indicateurs sont-ils alignés sur la stratégie et déclinés par processus ?",
-        "Analysez-vous les écarts et pilotez-vous des plans d'action en conséquence ?",
-        "Votre pilotage est-il régulier, partagé et orienté vers l'anticipation, sur la base de données fiables ?"
+        "Avez-vous fixé par écrit des objectifs précis pour cette année (chiffre d'affaires, nombre de clients, délais…) ?",
+        "Suivez-vous chaque mois quelques chiffres clés (ventes, marge, trésorerie, retards…) ?",
+        "Chaque responsable ou chaque équipe a-t-il ses propres objectifs, reliés à ceux de l'entreprise ?",
+        "Quand un chiffre n'est pas bon, décidez-vous d'actions précises, avec un responsable et une date ?",
+        "Faites-vous au moins une fois par mois le point sur ces chiffres avec vos responsables, pour préparer le mois suivant ?"
       ]
     },
     {
       nom: "Maîtriser l'incertain",
+      sous: "Ce qui peut faire fermer l'entreprise",
       questions: [
-        "Avez-vous identifié et formalisé vos risques et opportunités dans une cartographie ou un registre ?",
-        "Avez-vous défini des critères de risque et une méthode d'évaluation : échelle de gravité, échelle de probabilité, matrice de criticité ?",
-        "Évaluez-vous chaque risque selon cette méthode et le hiérarchisez-vous, de la criticité brute à la criticité résiduelle après maîtrise ?",
-        "Chaque risque significatif a-t-il une stratégie de traitement, un propriétaire désigné et une échéance ?",
-        "Les risques et opportunités sont-ils revus régulièrement, et cette analyse nourrit-elle vos décisions, dans une culture du risque partagée ?"
+        "Avez-vous listé par écrit ce qui pourrait gravement nuire à votre entreprise (perte d'un gros client, incendie, vol, contrôle, départ d'un employé clé…) ?",
+        "Savez-vous lesquels de ces dangers sont à la fois les plus graves et les plus probables ?",
+        "Pour les dangers les plus sérieux, avez-vous pris des mesures pour les éviter ou en limiter les effets ?",
+        "Chacune de ces mesures a-t-elle un responsable et une date ?",
+        "Avant une décision importante (investissement, nouveau marché, recrutement…), regardez-vous ce qui pourrait mal tourner ?"
       ]
     },
     {
       nom: "Parties prenantes et relation client",
+      sous: "Garder ses clients, sans dépendre d'un seul",
       questions: [
-        "Avez-vous identifié vos parties prenantes et vos clients clés ?",
-        "Recueillez-vous la voix du client, réclamations et retours ?",
-        "Mesurez-vous la satisfaction de façon régulière, par enquêtes ou indicateurs ?",
-        "Transformez-vous ces retours en actions d'amélioration suivies ?",
-        "Entretenez-vous un dialogue structuré et anticipez-vous les attentes, jusqu'à la co-construction ?"
+        "Savez-vous quels clients, fournisseurs et partenaires pèsent le plus dans votre activité ?",
+        "Votre activité pourrait-elle continuer normalement si votre plus gros client ou votre principal fournisseur partait ?",
+        "Recueillez-vous régulièrement l'avis de vos clients, y compris leurs plaintes (questionnaire, appel, échange…) ?",
+        "Ces retours conduisent-ils à des changements concrets, que vous suivez jusqu'au bout ?",
+        "Échangez-vous régulièrement avec vos principaux clients et partenaires sur leurs besoins à venir, pour vous y préparer avant eux ?"
       ]
     },
     {
       nom: "Audits, revues et suivi-évaluation",
+      sous: "Vérifier que tout tient, même sans le dirigeant",
       questions: [
-        "Réalisez-vous des audits ou des contrôles internes ?",
-        "Tenez-vous des revues régulières, de processus, de performance ou de direction ?",
-        "Ces audits et revues sont-ils planifiés et structurés par des référentiels ?",
-        "Les recommandations et décisions sont-elles consignées et suivies jusqu'à leur clôture ?",
-        "L'ensemble forme-t-il un cycle d'amélioration continue ancré dans la culture ?"
+        "Vérifiez-vous de temps en temps, sur le terrain, que le travail est fait comme prévu ?",
+        "Prenez-vous régulièrement un moment pour faire le bilan de ce qui marche et de ce qui ne marche pas ?",
+        "Ces vérifications et ces bilans sont-ils prévus à l'avance, avec des points précis à contrôler ?",
+        "Les décisions prises lors de ces bilans sont-elles notées et suivies jusqu'à leur réalisation ?",
+        "Vos responsables font-ils ces vérifications et ces bilans d'eux-mêmes, même quand vous n'êtes pas là ?"
       ]
     },
     {
       nom: "Durabilité",
+      sous: "Une entreprise qui dure et que son entourage respecte",
       questions: [
-        "Prenez-vous en compte des enjeux de durabilité, en sécurité, environnement ou social ?",
-        "Menez-vous des actions concrètes, sécurité au travail, économies d'énergie, ancrage local ?",
-        "Avez-vous une démarche formalisée, HSE ou RSE, avec une politique et des objectifs ?",
-        "Suivez-vous des indicateurs de durabilité et les intégrez-vous à vos décisions ?",
-        "La durabilité est-elle au cœur de votre modèle et une source d'innovation ?"
+        "Dans votre façon de travailler, tenez-vous compte de la sécurité de vos employés, de l'environnement et de votre voisinage ?",
+        "Avez-vous déjà pris des mesures concrètes (équipements de sécurité, économies d'énergie, gestion des déchets, emploi local…) ?",
+        "Ces engagements sont-ils écrits, avec des objectifs ?",
+        "Suivez-vous quelques chiffres sur ces sujets (accidents, consommation d'énergie, déchets…) et en tenez-vous compte dans vos décisions ?",
+        "Ces engagements vous apportent-ils des clients, des financements ou des idées nouvelles ?"
       ]
     }
   ]
@@ -193,7 +207,7 @@ function start(){
   CONFIG.leviers.forEach((lev,li)=>{
     state[li]=Array(lev.questions.length).fill(null);
     const card=document.createElement('div'); card.className='card';
-    card.innerHTML='<div class="lev-num">Levier '+(li+1)+'</div><div class="lev-title">'+lev.nom+'</div>';
+    card.innerHTML='<div class="lev-num">Levier '+(li+1)+'</div><div class="lev-title">'+lev.nom+'</div>'+(lev.sous?'<div class="lev-sub">'+lev.sous+'</div>':'');
     lev.questions.forEach((q,qi)=>{
       const d=document.createElement('div'); d.className='q';
       const name='q'+li+'_'+qi;
@@ -232,18 +246,18 @@ function compute(){
   const sc=document.getElementById('scores'); sc.innerHTML='';
   CONFIG.leviers.forEach((lev,i)=>{
     sc.innerHTML+='<div class="score-line"><span style="flex:0 0 42%">'+
-      '<b>L'+(i+1)+'</b> '+lev.nom+'</span><span class="bar"><i style="width:'+(on5[i]/5*100)+'%"></i></span>'+
+      '<b>L'+(i+1)+'</b> '+lev.nom+(lev.sous?'<br><small style="color:#666">'+lev.sous+'</small>':'')+'</span><span class="bar"><i style="width:'+(on5[i]/5*100)+'%"></i></span>'+
       '<b style="flex:0 0 44px;text-align:right">'+on5[i]+'/5</b></div>';
   });
   drawRadar(on5);
   window.scrollTo(0,0);
 }
 function profile(p){
-  if(p<34) return "<b>Fondations à poser.</b> Les leviers sont encore peu structurés. La priorité est de bâtir le socle documentaire et le pilotage de base avant d'élargir.";
-  if(p<50) return "<b>En construction.</b> Des pratiques existent mais restent inégales d'un levier à l'autre. L'enjeu est de les formaliser et de les relier entre elles.";
-  if(p<67) return "<b>Structuré.</b> Le système est en place et fonctionne. Le progrès viendra de l'alignement, de la mesure et de la revue régulière.";
-  if(p<84) return "<b>Piloté.</b> Les leviers sont maîtrisés et suivis par des données. Vous êtes dans une logique d'amélioration continue.";
-  return "<b>Performant et durable.</b> Les six leviers forment un système intégré, anticipatif et ancré dans la culture. Objectif : préserver et innover.";
+  if(p<34) return "<b>Fondations à poser.</b> Votre entreprise repose encore beaucoup sur vous. L'argent, l'organisation et les risques se suivent de mémoire plutôt que par écrit. Priorité : quelques bases simples, un cap, trois chiffres à suivre, la liste des dangers majeurs.";
+  if(p<50) return "<b>En construction.</b> De bonnes pratiques existent, mais elles dépendent encore des personnes. Les écrire et les rendre régulières permettra à l'entreprise de tenir sans vous.";
+  if(p<67) return "<b>Structuré.</b> Les bases sont en place. Prochaine étape : que toute votre équipe regarde dans la même direction, et que les bilans deviennent une habitude.";
+  if(p<84) return "<b>Piloté.</b> Votre entreprise se pilote par des faits. Le défi : anticiper, et consolider la relation avec vos clients et vos partenaires.";
+  return "<b>Performant et durable.</b> Votre organisation tient debout, avec ou sans vous. Objectif : préserver cette avance et innover.";
 }
 function drawRadar(vals){
   const c=document.getElementById('radar'), x=c.getContext('2d');
